@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+     version="1.1"
+     creator="POI Ahead - Symbol Test v2">
+  <metadata>
+    <name>POI Symbol Test - Simple Names</name>
+    <desc>Test file with simpler symbol names for better compatibility</desc>
+    <time>2025-01-15T12:00:00Z</time>
+  </metadata>
+
+  <!-- Gas Station - Fuel -->
+  <wpt lat="48.2100" lon="16.3700">
+    <name>Shell Station</name>
+    <cmt>km 1.0 | Gas Station | Shell Station | 24/7</cmt>
+    <desc>Away: 50 m</desc>
+    <sym>Fuel</sym>
+    <type>Gas Station</type>
+  </wpt>
+
+  <!-- Bakery - Food -->
+  <wpt lat="48.2150" lon="16.3750">
+    <name>Anker Bakery</name>
+    <cmt>km 2.5 | Bakery | Anker Bakery | Mo-Fr 06:00-19:00</cmt>
+    <desc>Away: 25 m</desc>
+    <sym>Food</sym>
+    <type>Bakery</type>
+  </wpt>
+
+  <!-- Grocery Store - Food -->
+  <wpt lat="48.2200" lon="16.3800">
+    <name>Hofer</name>
+    <cmt>km 5.0 | Grocery Store | Hofer | Mo-Fr 07:30-19:30</cmt>
+    <desc>Away: 30 m</desc>
+    <sym>Food</sym>
+    <type>Grocery Store</type>
+  </wpt>
+
+  <!-- Public Toilet - Restroom (WORKS) -->
+  <wpt lat="48.2250" lon="16.3850">
+    <name>City WC</name>
+    <cmt>km 7.2 | Toilet | City WC | 24/7</cmt>
+    <desc>Away: 10 m</desc>
+    <sym>Restroom</sym>
+    <type>Toilet</type>
+  </wpt>
+
+  <!-- Water Fountain - Water -->
+  <wpt lat="48.2300" lon="16.3900">
+    <name>Park Fountain</name>
+    <cmt>km 10.0 | Water Fountain | Park Fountain</cmt>
+    <desc>Away: 5 m</desc>
+    <sym>Water</sym>
+    <type>Water Fountain</type>
+  </wpt>
+
+  <!-- Bicycle Shop - Bike Trail -->
+  <wpt lat="48.2350" lon="16.3950">
+    <name>Bike Point</name>
+    <cmt>km 12.5 | Bicycle Shop | Bike Point Vienna | Mo-Fr 09:00-18:00</cmt>
+    <desc>Away: 80 m</desc>
+    <sym>Bike Trail</sym>
+    <type>Bicycle Shop</type>
+  </wpt>
+
+  <!-- Vending Machine - Food -->
+  <wpt lat="48.2450" lon="16.4050">
+    <name>Snack Automat</name>
+    <cmt>km 17.5 | Vending Machine | Snack Automat | 24/7</cmt>
+    <desc>Away: 20 m</desc>
+    <sym>Food</sym>
+    <type>Vending Machine</type>
+  </wpt>
+
+  <!-- Camping/Hotel - Campground -->
+  <wpt lat="48.2500" lon="16.4100">
+    <name>Donau Camping</name>
+    <cmt>km 20.0 | Accommodation | Donau Camping</cmt>
+    <desc>Away: 200 m</desc>
+    <sym>Campground</sym>
+    <type>Accommodation</type>
+  </wpt>
+
+  <!-- Sport Area - Stadium -->
+  <wpt lat="48.2550" lon="16.4150">
+    <name>Fitness Park</name>
+    <cmt>km 22.5 | Sport Area | Fitness Park</cmt>
+    <desc>Away: 100 m</desc>
+    <sym>Stadium</sym>
+    <type>Sport Area</type>
+  </wpt>
+
+  <!-- Simple test track -->
+  <trk>
+    <name>Test Route</name>
+    <trkseg>
+      <trkpt lat="48.2100" lon="16.3700"><ele>160</ele></trkpt>
+      <trkpt lat="48.2150" lon="16.3750"><ele>162</ele></trkpt>
+      <trkpt lat="48.2200" lon="16.3800"><ele>165</ele></trkpt>
+      <trkpt lat="48.2250" lon="16.3850"><ele>168</ele></trkpt>
+      <trkpt lat="48.2300" lon="16.3900"><ele>170</ele></trkpt>
+      <trkpt lat="48.2350" lon="16.3950"><ele>172</ele></trkpt>
+      <trkpt lat="48.2450" lon="16.4050"><ele>178</ele></trkpt>
+      <trkpt lat="48.2500" lon="16.4100"><ele>180</ele></trkpt>
+      <trkpt lat="48.2550" lon="16.4150"><ele>182</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

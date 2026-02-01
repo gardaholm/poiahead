@@ -1,0 +1,42 @@
+/* Font Awesome Light - Override CDN fonts with local font files */
+/* This file overrides the Font Awesome CDN to use local Light font files */
+
+@font-face {
+    font-family: 'Font Awesome 6 Pro';
+    font-style: normal;
+    font-weight: 300;
+    font-display: block;
+    src: url('pro-fa-light-300-5.9.0.woff2') format('woff2'),
+         url('pro-fa-light-300-5.9.0.woff') format('woff');
+}
+
+/* Override all Font Awesome classes to use Light font (weight 300) */
+.fal,
+.fa-light,
+.fas,
+.fa-solid,
+.far,
+.fa-regular,
+.fab,
+.fa-brands,
+.fa,
+[class*=" fa-"],
+[class^="fa-"] {
+    font-family: 'Font Awesome 6 Pro' !important;
+    font-weight: 300 !important;
+}
+
+/* Ensure pseudo-elements also use the Light font */
+.fal::before,
+.fa-light::before,
+.fas::before,
+.fa-solid::before,
+.far::before,
+.fa-regular::before,
+.fab::before,
+.fa-brands::before,
+[class*=" fa-"]::before,
+[class^="fa-"]::before {
+    font-family: 'Font Awesome 6 Pro' !important;
+    font-weight: 300 !important;
+}

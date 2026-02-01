@@ -1,0 +1,43 @@
+{
+  "public_toilets": {
+    "icon": "fa-toilet",
+    "color": "#4a90e2"
+  },
+  "bakeries": {
+    "icon": "fa-bread-slice",
+    "color": "#d4a574"
+  },
+  "gas_stations": {
+    "icon": "fa-gas-pump",
+    "color": "#e74c3c"
+  },
+  "grocery_stores": {
+    "icon": "fa-basket-shopping",
+    "color": "#27ae60"
+  },
+  "water_fountains": {
+    "icon": "fa-faucet",
+    "color": "#3498db"
+  },
+  "bicycle_shops": {
+    "icon": "fa-bicycle",
+    "color": "#2c3e50"
+  },
+  "bicycle_vending": {
+    "icon": "fa-bicycle",
+    "color": "#9b59b6"
+  },
+  "vending_machines": {
+    "icon": "fa-cookie-bite",
+    "color": "#f39c12"
+  },
+  "camping_hotels": {
+    "icon": "fa-campground",
+    "color": "#16a085"
+  },
+  "sport_areas": {
+    "icon": "fa-futbol",
+    "color": "#8e44ad"
+  }
+}
+

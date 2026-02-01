@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+     version="1.1"
+     creator="POI Ahead - Symbol Test">
+  <metadata>
+    <name>POI Symbol Test - All Types</name>
+    <desc>Test file to verify POI symbols display correctly in Garmin Connect and RideWithGPS</desc>
+    <time>2025-01-15T12:00:00Z</time>
+  </metadata>
+
+  <!-- Gas Station -->
+  <wpt lat="48.2100" lon="16.3700">
+    <name>Shell Station</name>
+    <cmt>km 1.0 | Gas Station | Shell Station | Mo-Su 00:00-24:00</cmt>
+    <desc>Away: 50 m | Brand: Shell | Price: Diesel 1.45</desc>
+    <sym>Gas Station</sym>
+    <type>Gas Station</type>
+  </wpt>
+
+  <!-- Bakery -->
+  <wpt lat="48.2150" lon="16.3750">
+    <name>Anker Bakery</name>
+    <cmt>km 2.5 | Bakery | Anker Bakery | Mo-Fr 06:00-19:00; Sa 07:00-17:00</cmt>
+    <desc>Away: 25 m | Brand: Anker</desc>
+    <sym>Restaurant</sym>
+    <type>Bakery</type>
+  </wpt>
+
+  <!-- Grocery Store -->
+  <wpt lat="48.2200" lon="16.3800">
+    <name>Hofer Supermarket</name>
+    <cmt>km 5.0 | Grocery Store | Hofer Supermarket | Mo-Fr 07:30-19:30; Sa 07:30-18:00</cmt>
+    <desc>Away: 30 m | Brand: Hofer</desc>
+    <sym>Convenience Store</sym>
+    <type>Grocery Store</type>
+  </wpt>
+
+  <!-- Public Toilet -->
+  <wpt lat="48.2250" lon="16.3850">
+    <name>City WC</name>
+    <cmt>km 7.2 | Toilet | City WC | 24/7</cmt>
+    <desc>Away: 10 m</desc>
+    <sym>Restroom</sym>
+    <type>Toilet</type>
+  </wpt>
+
+  <!-- Water Fountain -->
+  <wpt lat="48.2300" lon="16.3900">
+    <name>Park Fountain</name>
+    <cmt>km 10.0 | Water Fountain | Park Fountain</cmt>
+    <desc>Away: 5 m</desc>
+    <sym>Drinking Water</sym>
+    <type>Water Fountain</type>
+  </wpt>
+
+  <!-- Bicycle Shop -->
+  <wpt lat="48.2350" lon="16.3950">
+    <name>Bike Point Vienna</name>
+    <cmt>km 12.5 | Bicycle Shop | Bike Point Vienna | Mo-Fr 09:00-18:00; Sa 09:00-13:00</cmt>
+    <desc>Away: 80 m</desc>
+    <sym>Car Repair</sym>
+    <type>Bicycle Shop</type>
+  </wpt>
+
+  <!-- Bicycle Vending -->
+  <wpt lat="48.2400" lon="16.4000">
+    <name>Bike Tube Vending</name>
+    <cmt>km 15.0 | Bicycle Vending | Bike Tube Vending | 24/7</cmt>
+    <desc>Away: 15 m</desc>
+    <sym>Car Repair</sym>
+    <type>Bicycle Vending</type>
+  </wpt>
+
+  <!-- Vending Machine -->
+  <wpt lat="48.2450" lon="16.4050">
+    <name>Snack Automat</name>
+    <cmt>km 17.5 | Vending Machine | Snack Automat | 24/7</cmt>
+    <desc>Away: 20 m</desc>
+    <sym>Convenience Store</sym>
+    <type>Vending Machine</type>
+  </wpt>
+
+  <!-- Camping/Hotel -->
+  <wpt lat="48.2500" lon="16.4100">
+    <name>Donau Camping</name>
+    <cmt>km 20.0 | Accommodation | Donau Camping</cmt>
+    <desc>Away: 200 m | Price: 25-40 EUR</desc>
+    <sym>Lodging</sym>
+    <type>Accommodation</type>
+  </wpt>
+
+  <!-- Sport Area -->
+  <wpt lat="48.2550" lon="16.4150">
+    <name>Fitness Park</name>
+    <cmt>km 22.5 | Sport Area | Fitness Park</cmt>
+    <desc>Away: 100 m</desc>
+    <sym>Fitness Center</sym>
+    <type>Sport Area</type>
+  </wpt>
+
+  <!-- Simple test track -->
+  <trk>
+    <name>Test Route</name>
+    <trkseg>
+      <trkpt lat="48.2100" lon="16.3700"><ele>160</ele></trkpt>
+      <trkpt lat="48.2150" lon="16.3750"><ele>162</ele></trkpt>
+      <trkpt lat="48.2200" lon="16.3800"><ele>165</ele></trkpt>
+      <trkpt lat="48.2250" lon="16.3850"><ele>168</ele></trkpt>
+      <trkpt lat="48.2300" lon="16.3900"><ele>170</ele></trkpt>
+      <trkpt lat="48.2350" lon="16.3950"><ele>172</ele></trkpt>
+      <trkpt lat="48.2400" lon="16.4000"><ele>175</ele></trkpt>
+      <trkpt lat="48.2450" lon="16.4050"><ele>178</ele></trkpt>
+      <trkpt lat="48.2500" lon="16.4100"><ele>180</ele></trkpt>
+      <trkpt lat="48.2550" lon="16.4150"><ele>182</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

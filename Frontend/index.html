@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POI Ahead</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <!-- Font Awesome CSS from CDN (for all icon definitions) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <!-- Full-screen Map -->
+    <div id="map"></div>
+
+    <!-- Floating POI Panel -->
+    <div class="poi-panel" id="poi-panel">
+        <div class="poi-panel-header">
+            <div class="poi-panel-title">
+                <span>Points of Interest</span>
+                <span class="poi-count-badge" id="poi-count">0</span>
+            </div>
+            <button class="poi-panel-close" id="poi-panel-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="poi-panel-content" id="poi-list">
+            <div class="poi-empty" id="poi-empty">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>Upload a GPX to find POIs along your route.<br>Adjust settings to filter types and search radius.</p>
+            </div>
+            <table id="poi-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Dist</th>
+                        <th>Dev</th>
+                        <th>POI</th>
+                        <th>Hours</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="poi-tbody">
+                    <!-- POI rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Toggle Panel Button (shown when panel is collapsed) -->
+    <button class="toggle-panel-btn" id="toggle-panel-btn">
+        <i class="fas fa-list"></i>
+    </button>
+
+    <!-- Floating Top Toolbar -->
+    <div class="top-toolbar">
+        <div class="toolbar-left">
+            <div class="logo">
+                <span class="logo-icon">📍</span>
+                <span class="logo-text">POI Ahead</span>
+            </div>
+        </div>
+        <div class="toolbar-center" id="toolbar-center">
+            <span id="filename-display" class="filename-badge" style="display: none;"></span>
+            <span id="status-message" class="status-text"></span>
+        </div>
+        <div class="toolbar-right">
+            <div class="file-input-wrapper">
+                <input type="file" id="gpx-upload" accept=".gpx">
+                <label for="gpx-upload">
+                    <i class="fas fa-upload"></i>
+                    <span class="btn-label">Upload</span>
+                </label>
+            </div>
+            <button id="download-gpx-btn" class="toolbar-btn" disabled title="Export starred POIs with route">
+                <i class="fas fa-download"></i>
+                <span class="btn-label">Export</span>
+            </button>
+            <button id="timeline-btn" class="toolbar-btn" title="Smart Timeline">
+                <i class="fas fa-chart-line"></i>
+                <span class="btn-label">Timeline</span>
+            </button>
+            <button id="settings-btn" class="toolbar-btn" title="Settings">
+                <i class="fas fa-sliders"></i>
+                <span class="btn-label">Settings</span>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button id="info-btn" class="toolbar-btn toolbar-btn-icon" title="About POI Ahead">
+                <i class="fas fa-info"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Timeline Panel (floating at bottom) -->
+    <div class="timeline-panel" id="timeline-section">
+        <div class="timeline-header">
+            <h3 class="timeline-title">Smart Timeline</h3>
+            <div class="timeline-controls">
+                <div class="timeline-input-group">
+                    <label for="timeline-speed">Avg. Speed:</label>
+                    <input type="number" id="timeline-speed" min="1" max="200" value="25">
+                    <span class="input-unit">km/h</span>
+                </div>
+                <button class="timeline-close" id="timeline-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="timeline-visualization" id="timeline-visualization">
+            <div class="timeline-empty-state" id="timeline-empty">
+                <i class="fas fa-route"></i>
+                <p>Upload a GPX file and star POIs to see them on the timeline</p>
+            </div>
+            <div class="timeline-content" id="timeline-content" style="display: none;">
+                <div class="timeline-chart-container">
+                    <div class="elevation-container">
+                        <svg id="elevation-svg" class="elevation-profile" preserveAspectRatio="none"></svg>
+                        <div class="elevation-labels">
+                            <span class="elevation-max" id="elevation-max"></span>
+                            <span class="elevation-min" id="elevation-min"></span>
+                        </div>
+                        <div class="poi-hover-indicator" id="poi-hover-indicator"></div>
+                    </div>
+                    <div class="timeline-scales">
+                        <div class="distance-scale" id="distance-scale"></div>
+                        <div class="time-scale" id="time-scale"></div>
+                    </div>
+                    <div class="poi-markers" id="poi-markers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay & Panel -->
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h2>POI Settings</h2>
+            <button class="panel-close-btn" id="settings-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-content">
+            <form id="settings-form">
+                <div class="settings-section">
+                    <div class="settings-section-title">POI Types & Filters</div>
+                    <div class="settings-info">
+                        <p><strong>Max Dist.</strong> = How far from your route to search for POIs (in meters)</p>
+                        <p><strong>Dedup</strong> = If multiple POIs of same type are within this distance, only the best one is shown</p>
+                    </div>
+                    <div class="settings-columns-hint">
+                        <span class="hint-spacer"></span>
+                        <span>Max Dist.</span>
+                        <span>Dedup</span>
+                    </div>
+                    <div class="poi-settings-list">
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="public_toilets" checked>
+                                <span class="setting-name">Toilets</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="public_toilets" value="100" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="public_toilets" value="3000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="bakeries" checked>
+                                <span class="setting-name">Bakeries</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="bakeries" value="250" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="bakeries" value="5000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="gas_stations" checked>
+                                <span class="setting-name">Gas Stations</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="gas_stations" value="100" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="gas_stations" value="5000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="grocery_stores" checked>
+                                <span class="setting-name">Grocery Stores</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="grocery_stores" value="250" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="grocery_stores" value="5000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="water_fountains" checked>
+                                <span class="setting-name">Water Fountains</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="water_fountains" value="100" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="water_fountains" value="2000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="bicycle_shops" checked>
+                                <span class="setting-name">Bicycle Shops</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="bicycle_shops" value="1000" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="bicycle_shops" value="4000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="bicycle_vending" checked>
+                                <span class="setting-name">Bicycle Vending</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="bicycle_vending" value="1000" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="bicycle_vending" value="4000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="vending_machines" checked>
+                                <span class="setting-name">Vending Machines</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="vending_machines" value="100" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="vending_machines" value="1000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="camping_hotels">
+                                <span class="setting-name">Accommodation</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="camping_hotels" value="500" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="camping_hotels" value="5000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" class="setting-checkbox poi-checkbox" value="sport_areas">
+                                <span class="setting-name">Sport Areas</span>
+                            </label>
+                            <div class="setting-inputs">
+                                <input type="number" class="setting-input poi-max-deviation" data-poi-type="sport_areas" value="500" title="Max deviation (m)">
+                                <input type="number" class="setting-input poi-deduplication-radius" data-poi-type="sport_areas" value="3000" title="Dedup radius (m)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="settings-footer">
+            <button type="button" class="btn btn-primary" id="save-settings-btn">
+                <i class="fas fa-check"></i>
+                Save & Reload POIs
+            </button>
+        </div>
+    </div>
+
+    <!-- Download Format Dialog -->
+    <div id="download-format-modal" class="modal">
+        <div class="modal-content download-format-dialog">
+            <button class="modal-close download-format-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Export POI-Track</h2>
+            <p class="modal-subtitle">with all Starred POIs</p>
+            <div class="modal-actions">
+                <div class="modal-action-item">
+                    <button id="download-gpx-format" class="btn btn-primary" style="min-width: 180px;">
+                        <i class="fas fa-route"></i> Export GPX
+                    </button>
+                    <span class="modal-hint">Garmin, Komoot, Ride with GPS</span>
+                </div>
+                <div class="modal-action-item">
+                    <button id="download-kml-format" class="btn btn-primary" style="min-width: 180px;">
+                        <i class="fas fa-map-marked-alt"></i> Export KML
+                    </button>
+                    <span class="modal-hint">Google My Maps (offline use)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits Modal -->
+    <div id="credits-modal" class="modal">
+        <div class="modal-content credits-content">
+            <button class="modal-close" id="credits-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>About POI Ahead</h2>
+            <p class="credits-intro">Upload a GPX track. Discover shops, water sources, and stops along your route. Star key POIs, export for Garmin to get notifications while riding, or generate a cue sheet — everything you need for your next ultracycling or bikepacking adventure.</p>
+
+            <div class="credits-section">
+                <h3>Based On</h3>
+                <p>This project is based on <a href="https://github.com/arcticfade/MapAhead" target="_blank">MapAhead</a> by <a href="https://github.com/arcticfade" target="_blank">arcticfade</a>.</p>
+                <p class="license-note">Licensed under the MIT License.</p>
+            </div>
+
+            <div class="credits-section">
+                <h3>Map & Data</h3>
+                <ul>
+                    <li><a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> - Map data (ODbL)</li>
+                    <li><a href="https://www.cyclosm.org/" target="_blank">CyclOSM</a> - Cycling map tiles</li>
+                    <li><a href="https://opentopomap.org/" target="_blank">OpenTopoMap</a> - Topographic tiles</li>
+                    <li><a href="https://overpass-api.de/" target="_blank">Overpass API</a> - POI queries</li>
+                </ul>
+            </div>
+
+            <div class="credits-section">
+                <h3>Technologies</h3>
+                <ul>
+                    <li><a href="https://leafletjs.com/" target="_blank">Leaflet</a> - Interactive maps</li>
+                    <li><a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI</a> - Backend framework</li>
+                    <li><a href="https://fontawesome.com/" target="_blank">Font Awesome</a> - Icons</li>
+                </ul>
+            </div>
+
+            <div class="credits-footer">
+                <a href="https://github.com/gardaholm/poiahead" target="_blank" class="credits-github">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Custom JavaScript -->
+    <script src="static/script.js"></script>
+</body>
+</html>
