@@ -2,6 +2,8 @@
 
 Upload a GPX track. Discover shops, water sources, and stops along your route. Star key POIs, export for Garmin to get notifications while riding, or generate a cue sheet — everything you need for your next ultracycling or bikepacking adventure.
 
+![POI Ahead](screenshot.png)
+
 Built on [MapAhead](https://github.com/arcticfade/MapAhead) by [arcticfade](https://github.com/arcticfade), which provides the really helpful R-tree spatial indexing and POI discovery engine. Thanks!
 
 ## Features
