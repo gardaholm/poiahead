@@ -947,11 +947,20 @@ function toggleStarPOI(poiId) {
 function updateDownloadButtonState() {
     const downloadBtn = document.getElementById('download-gpx-btn');
     if (!downloadBtn) return;
-    
+
     const hasRoute = currentRouteID !== null;
     const hasStarredPOIs = starredPOIs.size > 0;
-    
+
     downloadBtn.disabled = !hasRoute || !hasStarredPOIs;
+
+    // Update tooltip based on state
+    if (!hasRoute) {
+        downloadBtn.title = 'Upload a GPX file first';
+    } else if (!hasStarredPOIs) {
+        downloadBtn.title = 'Star at least one POI to export';
+    } else {
+        downloadBtn.title = 'Export starred POIs with route';
+    }
 }
 
 // Function to download GPX with starred POIs
