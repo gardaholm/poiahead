@@ -50,21 +50,15 @@ Try the demo here: https://poi-ahead.fly.dev/
    pip install -r requirements.txt
    ```
 
-3. **Start the backend** (in `Backend/` folder)
+3. **Start the app**
    ```bash
-   cd Backend
-   fastapi dev main.py --port 8000
+   ./start.sh            # Production mode
+   ./start.sh --reload   # Development mode (auto-reload on changes)
    ```
 
-4. **Start the frontend** (in `Frontend/` folder)
-   ```bash
-   cd Frontend
-   python -m http.server 4000
+4. **Open in browser**
    ```
-
-5. **Open in browser**
-   ```
-   http://localhost:4000
+   http://localhost:8000
    ```
 
 ## Project Structure

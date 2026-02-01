@@ -4,17 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build and Run Commands
 
-**Backend (FastAPI):**
+**Start the app:**
 ```bash
-cd Backend
-fastapi dev main.py --port 8000
+./start.sh            # Production mode
+./start.sh --reload   # Development mode (auto-reload on changes)
 ```
-
-**Frontend (static files):**
-```bash
-cd Frontend
-python -m http.server 4000
-```
+Then open http://localhost:8000
 
 **Tests:**
 ```bash
