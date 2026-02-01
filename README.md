@@ -6,6 +6,7 @@ Upload a GPX track. Discover shops, water sources, and stops along your route. S
 
 Built on [MapAhead](https://github.com/arcticfade/MapAhead) by [arcticfade](https://github.com/arcticfade), which provides the really helpful R-tree spatial indexing and POI discovery engine. Thanks!
 
+Try the demo here: https://poi-ahead.fly.dev/
 ## Features
 
 - **GPX Upload** - Import GPX files up to 2MB
