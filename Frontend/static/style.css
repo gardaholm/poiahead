@@ -247,6 +247,33 @@ body {
     background: var(--accent-hover);
 }
 
+/* Toolbar drop zone state */
+.top-toolbar.drop-zone-active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    border-style: dashed;
+    border-width: 2px;
+}
+
+.top-toolbar.drop-zone-active::before {
+    content: 'Drop GPX file here';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(220, 252, 231, 0.95);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: var(--radius-lg);
+    z-index: 10;
+}
+
+.top-toolbar.drop-zone-active > * {
+    opacity: 0.3;
+}
+
 .filename-badge {
     padding: 4px 10px;
     background: var(--accent-light);

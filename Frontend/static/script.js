@@ -585,6 +585,80 @@ document.getElementById('gpx-upload').addEventListener('change', async function(
     }
     });
 
+// Drag and drop functionality for the toolbar
+function setupToolbarDropZone() {
+    const toolbar = document.querySelector('.top-toolbar');
+    const fileInput = document.getElementById('gpx-upload');
+
+    if (!toolbar || !fileInput) return;
+
+    let dragCounter = 0;
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Check if dragging files
+    function hasFiles(e) {
+        return e.dataTransfer.types.includes('Files');
+    }
+
+    // Show drop zone when dragging files anywhere on the page
+    document.addEventListener('dragenter', (e) => {
+        preventDefaults(e);
+        dragCounter++;
+        if (hasFiles(e)) {
+            toolbar.classList.add('drop-zone-active');
+        }
+    });
+
+    document.addEventListener('dragover', (e) => {
+        preventDefaults(e);
+        if (hasFiles(e)) {
+            toolbar.classList.add('drop-zone-active');
+        }
+    });
+
+    document.addEventListener('dragleave', (e) => {
+        preventDefaults(e);
+        dragCounter--;
+        if (dragCounter === 0) {
+            toolbar.classList.remove('drop-zone-active');
+        }
+    });
+
+    // Handle drop anywhere on the page
+    document.addEventListener('drop', (e) => {
+        preventDefaults(e);
+        dragCounter = 0;
+        toolbar.classList.remove('drop-zone-active');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+
+            // Check if it's a GPX file
+            if (!file.name.toLowerCase().endsWith('.gpx')) {
+                updateStatus('Error: Please drop a GPX file');
+                setTimeout(() => updateStatus(''), 3000);
+                return;
+            }
+
+            // Create a new FileList-like object and trigger the upload
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            // Trigger the change event to start the upload
+            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    });
+}
+
+// Initialize drop zone after DOM is ready
+document.addEventListener('DOMContentLoaded', setupToolbarDropZone);
+
 // Helper function to generate a stable POI ID based on coordinates and type
 function generatePOIId(lat, lon, poiType, index = 0) {
     // Use coordinates and type for stable ID (round to 6 decimal places for matching)
