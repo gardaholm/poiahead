@@ -456,6 +456,19 @@ body {
     background-color: #fef9c3;
 }
 
+#poi-table tbody tr.highlighted {
+    animation: highlight-pulse 2s ease-out;
+}
+
+@keyframes highlight-pulse {
+    0% {
+        background-color: #93c5fd;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
 #poi-table a {
     color: var(--accent);
     text-decoration: none;

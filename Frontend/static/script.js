@@ -272,6 +272,8 @@ let currentMarkers = [];
 let poiMarkerMap = new Map();
 // Set to store starred POI IDs for future GPX export
 let starredPOIs = new Set();
+// Store current GPX file data for re-upload if server loses the route
+let currentGPXFile = null;
 
 // Timeline data
 let elevationData = [];
@@ -491,7 +493,10 @@ document.getElementById('gpx-upload').addEventListener('change', async function(
         setTimeout(() => updateStatus(''), 3000);
         return;
     }
-    
+
+    // Store the file for potential re-upload if server loses the route
+    currentGPXFile = file;
+
     const filenameDisplay = document.getElementById('filename-display');
     filenameDisplay.textContent = file.name;
     filenameDisplay.style.display = 'inline-block';
@@ -690,8 +695,17 @@ function addPOIToMapAndTable(markerData, poi, poiTableBody, startIndex = 0) {
         popupContent += `<a href="${markerData.url}" target="_blank" rel="noopener noreferrer">🌐 Website</a><br>`;
     }
     if (markerData.google_maps_link) {
-        popupContent += `<a href="${markerData.google_maps_link}" target="_blank" rel="noopener noreferrer">📍 Open in Google Maps</a>`;
+        popupContent += `<a href="${markerData.google_maps_link}" target="_blank" rel="noopener noreferrer">📍 Google Maps</a><br>`;
     }
+    // Add star and delete buttons
+    popupContent += `<div class="popup-actions" style="margin-top: 8px; display: flex; gap: 8px;">
+        <button class="popup-star-btn" data-poi-id="${poiId}" title="Star POI" style="padding: 4px 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff;">
+            <i class="far fa-star"></i> Star
+        </button>
+        <button class="popup-delete-btn" data-poi-id="${poiId}" title="Delete POI" style="padding: 4px 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #dc2626;">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+    </div>`;
     
     // Create marker
     const icon = createPOIIcon(markerData.poi_type || 'gas_stations');
@@ -699,10 +713,56 @@ function addPOIToMapAndTable(markerData, poi, poiTableBody, startIndex = 0) {
         .bindPopup(popupContent)
         .addTo(map);
     currentMarkers.push(marker);
-    
+
     // Store marker reference
     marker.poiId = poiId;
     marker.starred = false;
+
+    // Add click handler to highlight POI in list when marker is clicked
+    marker.on('click', () => {
+        highlightPOIInList(poiId);
+    });
+
+    // Add event handlers for popup buttons when popup opens
+    marker.on('popupopen', () => {
+        const popup = marker.getPopup();
+        const popupEl = popup.getElement();
+        if (!popupEl) return;
+
+        // Update star button state
+        const starBtn = popupEl.querySelector('.popup-star-btn');
+        if (starBtn) {
+            const poiData = poiMarkerMap.get(poiId);
+            if (poiData && poiData.starred) {
+                starBtn.innerHTML = '<i class="fas fa-star" style="color: #eab308;"></i> Starred';
+                starBtn.style.background = '#fefce8';
+            }
+
+            starBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleStarPOI(poiId);
+                // Update button state
+                const poiData = poiMarkerMap.get(poiId);
+                if (poiData && poiData.starred) {
+                    starBtn.innerHTML = '<i class="fas fa-star" style="color: #eab308;"></i> Starred';
+                    starBtn.style.background = '#fefce8';
+                } else {
+                    starBtn.innerHTML = '<i class="far fa-star"></i> Star';
+                    starBtn.style.background = '#fff';
+                }
+            });
+        }
+
+        // Delete button handler
+        const deleteBtn = popupEl.querySelector('.popup-delete-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                marker.closePopup();
+                deletePOI(poiId);
+            });
+        }
+    });
     
     // Create table row
     const row = document.createElement('tr');
@@ -986,6 +1046,31 @@ async function loadPOIs() {
 
 // Helper function to toggle POI list visibility - removed, list is always visible now
 
+// Helper function to highlight a POI row in the list when marker is clicked
+function highlightPOIInList(poiId) {
+    const poiData = poiMarkerMap.get(poiId);
+    if (!poiData || !poiData.row) return;
+
+    const row = poiData.row;
+    const poiPanel = document.getElementById('poi-panel');
+
+    // Expand panel if collapsed
+    if (poiPanel && poiPanel.classList.contains('collapsed')) {
+        poiPanel.classList.remove('collapsed');
+    }
+
+    // Scroll the row into view
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Add highlight class
+    row.classList.add('highlighted');
+
+    // Remove highlight after animation
+    setTimeout(() => {
+        row.classList.remove('highlighted');
+    }, 2000);
+}
+
 // Helper function to toggle star state of a POI
 function toggleStarPOI(poiId) {
     const poiData = poiMarkerMap.get(poiId);
@@ -1034,6 +1119,41 @@ function updateDownloadButtonState() {
         downloadBtn.title = 'Star at least one POI to export';
     } else {
         downloadBtn.title = 'Export starred POIs with route';
+    }
+}
+
+// Function to re-upload GPX file if server lost the route
+// Returns the new route_id, or null if re-upload failed
+async function reuploadGPXIfNeeded() {
+    if (!currentGPXFile) {
+        console.log('No GPX file stored for re-upload');
+        return null;
+    }
+
+    console.log('Re-uploading GPX file to restore route...');
+    updateStatus('Restoring route...');
+
+    const formData = new FormData();
+    formData.append('file', currentGPXFile);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/gpx/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            console.error('Failed to re-upload GPX file');
+            return null;
+        }
+
+        const data = await response.json();
+        currentRouteID = data.route_id;
+        console.log('Route restored with new ID:', currentRouteID);
+        return currentRouteID;
+    } catch (error) {
+        console.error('Error re-uploading GPX:', error);
+        return null;
     }
 }
 
@@ -1091,17 +1211,32 @@ async function downloadGPXWithStarredPOIs() {
         });
         
         // Call backend endpoint with POST to avoid URL length limits
-        const url = `${API_BASE_URL}/gpx/download/${currentRouteID}`;
-        
+        let url = `${API_BASE_URL}/gpx/download/${currentRouteID}`;
+
         // Fetch and trigger download using POST with JSON body
-        const response = await fetch(url, {
+        let response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(starredPOIsData)
         });
-        
+
+        // If route not found, try to re-upload and retry
+        if (response.status === 404) {
+            const newRouteId = await reuploadGPXIfNeeded();
+            if (newRouteId) {
+                url = `${API_BASE_URL}/gpx/download/${newRouteId}`;
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(starredPOIsData)
+                });
+            }
+        }
+
         if (!response.ok) {
             let errorMessage = 'Failed to download GPX file';
             try {
@@ -1111,14 +1246,14 @@ async function downloadGPXWithStarredPOIs() {
                 // If JSON parsing fails, use status text
                 errorMessage = response.statusText || errorMessage;
             }
-            
+
             // Provide more helpful error messages
             if (response.status === 404) {
                 if (errorMessage.includes('Route not found')) {
                     errorMessage = 'Route not found. Please upload your GPX file again.';
                 }
             }
-            
+
             throw new Error(errorMessage);
         }
         
@@ -1226,15 +1361,30 @@ async function downloadKMLWithStarredPOIs() {
 
         const starredPOIsData = getStarredPOIsData();
 
-        const url = `${API_BASE_URL}/kml/download/${currentRouteID}`;
+        let url = `${API_BASE_URL}/kml/download/${currentRouteID}`;
 
-        const response = await fetch(url, {
+        let response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(starredPOIsData)
         });
+
+        // If route not found, try to re-upload and retry
+        if (response.status === 404) {
+            const newRouteId = await reuploadGPXIfNeeded();
+            if (newRouteId) {
+                url = `${API_BASE_URL}/kml/download/${newRouteId}`;
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(starredPOIsData)
+                });
+            }
+        }
 
         if (!response.ok) {
             let errorMessage = 'Failed to download KML file';

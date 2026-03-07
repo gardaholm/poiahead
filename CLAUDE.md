@@ -45,7 +45,7 @@ POI Ahead: Upload a GPX track. Discover shops, water sources, and stops along yo
   - `/pois/{route_id}` (GET) - SSE streaming of POIs
   - `/gpx/download/{route_id}` (POST) - Export GPX with waypoints
   - `/kml/download/{route_id}` (POST) - Export KML for Google My Maps
-- **`route_storage.py`**: In-memory route storage with R-tree indexing. `RouteStorage` is thread-safe; `Route` holds points + spatial index
+- **`route_storage.py`**: In-memory route storage with R-tree indexing. `RouteStorage` is thread-safe; `Route` holds points + spatial index. **Note:** Routes are lost on server restart; frontend auto-recovers by re-uploading stored GPX
 - **`overpass_client.py`**: Queries multiple Overpass API instances with retry/fallback. `POI_TYPE_CONFIG` dict defines all supported POI types and their Overpass queries
 - **`route_calculator.py`**: Distance calculations using haversine formula and R-tree for nearest point lookup
 - **`poi.py`**: `POI` dataclass with coordinates, distances, metadata (opening hours, brand, price range, etc.)
@@ -67,6 +67,13 @@ Modern responsive UI with floating panels over a full-screen map.
 - `static/style.css` - Modern CSS with design tokens, glassmorphism effects
 - `static/poi-icons.json` - POI type to icon/color mapping
 
+**Frontend State Management:**
+- `currentGPXFile` - Stores uploaded GPX file for auto-recovery if server loses route
+- `currentRouteID` - Current route UUID from backend
+- `poiMarkerMap` - Map linking POI IDs to markers, table rows, and data
+- `starredPOIs` - Set of starred POI IDs for export
+- Settings persisted in `localStorage` (`poiSettings`, `timelineSettings`)
+
 **UI Components:**
 - **Top Toolbar** - Logo on left, action buttons (Upload, Export, Timeline, Settings) + GitHub/Info links on right; spans from left edge to POI panel
 - **POI Panel** - Right sidebar (desktop) or bottom panel (mobile), collapsible; toolbar expands when collapsed
@@ -74,6 +81,13 @@ Modern responsive UI with floating panels over a full-screen map.
 - **Timeline Panel** - Elevation profile with distance/time scales and POI markers (bottom, left of POI panel)
 - **Export Modal** - Choose between GPX and KML export formats
 - **Credits Modal** - About info with attribution and links
+- **POI Popups** - Map marker popups with POI details, star/delete buttons
+
+**POI Interactions:**
+- Click marker on map → highlights corresponding row in POI panel (blue pulse animation)
+- Click row in POI panel → pans map to POI and opens popup
+- Star/delete POIs from either the table row or the map popup
+- Hover over POI row → shows position indicator on timeline
 
 **Map Layers:**
 - Standard (OpenStreetMap)
@@ -90,3 +104,17 @@ Modern responsive UI with floating panels over a full-screen map.
 
 - GPX test files located in `tests/files/`
 - `conftest.py` adds Backend to Python path
+
+## Deployment (Fly.io)
+
+**Configuration:** `fly.toml`
+- Auto-scales to zero after 30 minutes idle (`idle_timeout = '30m'`)
+- Auto-starts on incoming requests
+- Primary region: `iad` (US East)
+
+**Deploy:**
+```bash
+fly deploy
+```
+
+**Known Limitation:** In-memory route storage is lost on server restart/scale-down. Frontend handles this by storing the GPX file client-side and auto-re-uploading when needed (transparent to user).
