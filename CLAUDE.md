@@ -49,7 +49,7 @@ POI Ahead: Upload a GPX track. Discover shops, water sources, and stops along yo
 - **`overpass_client.py`**: Queries multiple Overpass API instances with retry/fallback. `POI_TYPE_CONFIG` dict defines all supported POI types and their Overpass queries
 - **`route_calculator.py`**: Distance calculations using haversine formula and R-tree for nearest point lookup
 - **`poi.py`**: `POI` dataclass with coordinates, distances, metadata (opening hours, brand, price range, etc.)
-- **`gpx_generator.py`**: Generates GPX files with POI waypoints for Garmin/Komoot/RideWithGPS
+- **`gpx_generator.py`**: Generates GPX files with POI waypoints for Garmin/Komoot/RideWithGPS. Includes `escape_xml_urls()` to fix unescaped `&` in URLs (gpxpy bug)
 - **`kml_generator.py`**: Generates KML files with styled placemarks for Google My Maps
 
 ### POI Types
@@ -117,4 +117,6 @@ Modern responsive UI with floating panels over a full-screen map.
 fly deploy
 ```
 
-**Known Limitation:** In-memory route storage is lost on server restart/scale-down. Frontend handles this by storing the GPX file client-side and auto-re-uploading when needed (transparent to user).
+**Known Limitations:**
+- In-memory route storage is lost on server restart/scale-down. Frontend handles this by storing the GPX file client-side and auto-re-uploading when needed (transparent to user)
+- GPX files from some sources (e.g., bikerouter.de) contain unescaped `&` in URLs which breaks XML parsing. The `gpx_generator.py` post-processes output to fix this for Garmin compatibility

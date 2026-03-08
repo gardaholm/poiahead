@@ -1,9 +1,25 @@
 import gpxpy
+import re
 from xml.etree import ElementTree
+from xml.sax.saxutils import escape as xml_escape
 from typing import List, Dict, Optional
 from Backend.route_storage import Route, RoutePoint
 from Backend.poi import POI
 from Backend.route_calculator import RouteCalculator
+
+
+def escape_xml_urls(xml_string: str) -> str:
+    """
+    Fix unescaped & characters in href attributes.
+    gpxpy doesn't properly escape URLs, so we need to post-process.
+    """
+    def escape_href(match):
+        href_value = match.group(1)
+        # Replace & with &amp; but not already escaped &amp;
+        escaped = re.sub(r'&(?!amp;|lt;|gt;|quot;|apos;)', '&amp;', href_value)
+        return f'href="{escaped}"'
+
+    return re.sub(r'href="([^"]*)"', escape_href, xml_string)
 
 # Mapping from POI types to GPX waypoint symbols
 # Using simple names that work across Garmin Connect, RideWithGPS, etc.
@@ -164,6 +180,8 @@ def generate_gpx_with_waypoints(
     for poi in pois:
         waypoint = generate_gpx_waypoint(poi, route, route_calculator, mode=mode)
         gpx.waypoints.append(waypoint)
-    
-    return gpx.to_xml()
+
+    # Generate XML and fix unescaped URLs (gpxpy bug)
+    xml_output = gpx.to_xml()
+    return escape_xml_urls(xml_output)
 
