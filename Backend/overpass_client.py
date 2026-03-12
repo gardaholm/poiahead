@@ -26,8 +26,8 @@ POI_TYPE_CONFIG = {
         "default_name": "Unnamed Grocery Store"
     },
     "water_fountains": {
-        "query": 'node["amenity"~"^(drinking_water|fountain)$"]({south},{west},{north},{east}); way["amenity"~"^(drinking_water|fountain)$"]({south},{west},{north},{east});',
-        "default_name": "Unnamed Water Fountain"
+        "query": 'node["amenity"="drinking_water"]({south},{west},{north},{east}); node["amenity"="water_point"]({south},{west},{north},{east}); node["amenity"="fountain"]["drinking_water"="yes"]({south},{west},{north},{east}); node["man_made"="water_tap"]["drinking_water"!="no"]({south},{west},{north},{east}); node["natural"="spring"]["drinking_water"="yes"]({south},{west},{north},{east});',
+        "default_name": "Drinking Water"
     },
     "bicycle_shops": {
         "query": 'node["shop"="bicycle"]({south},{west},{north},{east}); way["shop"="bicycle"]({south},{west},{north},{east}); node["service"="bicycle_repair"]({south},{west},{north},{east}); way["service"="bicycle_repair"]({south},{west},{north},{east});',
