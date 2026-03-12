@@ -403,8 +403,8 @@ async def download_gpx_with_pois(
             filename = f"route_{route_id}_with_pois.gpx"
         
         return Response(
-            content=gpx_xml,
-            media_type="application/gpx+xml",
+            content=gpx_xml.encode('utf-8'),
+            media_type="application/gpx+xml; charset=utf-8",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"'
             }
@@ -495,8 +495,8 @@ async def download_kml_with_pois(
             filename = f"route_{route_id}_with_pois.kml"
 
         return Response(
-            content=kml_xml,
-            media_type="application/vnd.google-earth.kml+xml",
+            content=kml_xml.encode('utf-8'),
+            media_type="application/vnd.google-earth.kml+xml; charset=utf-8",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"'
             }
