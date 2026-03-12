@@ -74,9 +74,9 @@ class OverpassClient:
     def __init__(self, route: Route):
         # Try multiple Overpass API instances for better reliability
         self.overpass_urls = [
-            "https://overpass-api.de/api/interpreter",  # Primary (HTTPS)
-            "http://overpass-api.de/api/interpreter",  # Fallback (HTTP)
-            "https://overpass.kumi.systems/api/interpreter",  # Alternative instance
+            "https://overpass-api.de/api/interpreter",  # Primary (Germany)
+            "https://overpass.kumi.systems/api/interpreter",  # Alternative (often faster)
+            "https://overpass.openstreetmap.fr/api/interpreter",  # French instance
         ]
         self.route = route
         self.route_calculator = RouteCalculator()
